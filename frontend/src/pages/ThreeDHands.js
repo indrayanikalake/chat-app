@@ -160,7 +160,7 @@ requestAnimationFrame(animate);
   }, []);
 
   return (
-    <div className="text-container">
+    <div className="textContainer" >
       <canvas ref={canvasRef} id="canvas"></canvas>
     </div>
   );

@@ -37,4 +37,11 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
+.textContainer{
+  overflow: hidden;
+}
+.bg{
+  border-radius: 10%;
+   background: linear-gradient(90deg, #151515, #393a04, #a8be05);
+   box-shadow: 15px 10px 5px rgb(36, 36, 37)
+}
