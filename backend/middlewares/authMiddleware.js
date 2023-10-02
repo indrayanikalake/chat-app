@@ -4,12 +4,13 @@ const asyncHandler = require("express-async-handler");
 
 const protect = asyncHandler(async (req,res,next)=>{
   let token;
-  if(req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')){
+  console.log(req.headers)
+  if(req.headers.autherization &&
+    req.headers.autherization.startsWith('Bearer')){
         try{
 
             token = req.headers.autherization.split(" ")[1];
-
+             console.log(token);
             //"Bearer nvbjhbjsghuguifsb"
 
             //decode token id
@@ -22,6 +23,7 @@ const protect = asyncHandler(async (req,res,next)=>{
           throw new Error("Not authorized, token failed")
         }
     }
+    
 
     if(!token){
        res.status(401);

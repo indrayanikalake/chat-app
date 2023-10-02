@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Chat = require('../models/chatModel');
+const User = require('../models/userModel');
 
 
 const accessChat = asyncHandler( async (req, res)=>{
@@ -10,7 +11,7 @@ const accessChat = asyncHandler( async (req, res)=>{
         res.sendStatus(400);
     }
 
-    const isChat = await Chat.find({
+    var isChat = await Chat.find({
         isGroupChat:false,
         $and:[
             {users:{$elemMatch: {$eq: req.user._id}}},
@@ -46,6 +47,7 @@ const accessChat = asyncHandler( async (req, res)=>{
 
 const fetchChats = asyncHandler( async (req,res)=>{
     try{
+        console.log(req.user._id);
         Chat.find({users: {$elemMatch: {$eq: req.user._id}}})
         .populate("users","-password")
         .populate("groupAdmin","-password")
@@ -129,7 +131,7 @@ const addToGroup = asyncHandler( async (req,res)=>{
    const added = await Chat.findByIdAndUpdate(
     chatId,
     {
-        $push: {users: userID}
+        $push: {users: userId}
     },
     {
         new:true
@@ -152,7 +154,7 @@ const removeFromGroup = asyncHandler( async (req,res)=>{
    const removed = await Chat.findByIdAndUpdate(
     chatId,
     {
-        $pull: {users: userID}
+        $pull: {users: userId}
     },
     {
         new:true

@@ -1,11 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import ThreeDHands from './ThreeDHands'
 import { Box, Container, Text } from '@chakra-ui/react'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { LogIn, SignUp } from '../component'
+import { useHistory } from 'react-router-dom'
 
 const HomePage = () => {
+  const history = useHistory();
+  
+  useEffect(()=>{ 
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+
+  if(user) history.push('/chats');
+  },[history]);
+
   return (
     <div style={{overflow:'hidden'}}>
       <div style={{overflow:'hidden'}}>
