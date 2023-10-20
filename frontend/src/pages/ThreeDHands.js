@@ -8,6 +8,7 @@ import { ShaderPass } from 'https://cdn.skypack.dev/three@0.124.0/examples/jsm/p
 import { PixelShader } from 'https://cdn.skypack.dev/three@0.124.0/examples/jsm/shaders/PixelShader.js';
 import { FBXLoader } from 'https://cdn.skypack.dev/three@0.134.0/examples/jsm/loaders/FBXLoader.js';
 import { useRef, useEffect } from 'react';
+import { Box } from '@chakra-ui/react';
 
 const ThreeDHands = () => {
   const canvasRef = useRef(null);
@@ -160,9 +161,11 @@ requestAnimationFrame(animate);
   }, []);
 
   return (
-    <div className="textContainer" >
+    <Box
+    overflowY='hidden'
+    className="textContainer" >
       <canvas ref={canvasRef} id="canvas"></canvas>
-    </div>
+    </Box>
   );
 };
 

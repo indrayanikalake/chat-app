@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ChatState } from '../context/ChatProvider'
 import { Box, FormControl, IconButton, Text,  Input } from '@chakra-ui/react'
 import { ArrowBackIcon, ArrowRightIcon } from '@chakra-ui/icons';
@@ -15,6 +15,32 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
     
    console.log(selectedChat);
    console.log(user);
+   const groupIdentity = selectedChat?.id;
+
+   const fetchMessage =async () =>{
+    const groupId = selectedChat?.id;
+    const config={
+      headers:{
+        Autherization:`Bearer ${user.token}`,
+        'Content-Type':'application/json'
+      },
+      params:{
+        groupId:groupId,
+      }
+    }
+    try{
+      const response = await axios.get('/msg/receivemsg', config);
+      console.log(response);
+
+    }catch(error){
+      console.log(error);
+    }
+
+   }
+
+   useEffect(()=>{
+    fetchMessage();
+   },[groupIdentity])
 
    const messageHandler = (e)=>{
     setMessage(e.target.value);
@@ -30,7 +56,7 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
     }
     setLoading(true);
     try{
-      await axios.post('/sendMessage',{
+      await axios.post('/msg/sendMessage',{
       
         message: message,
         groupId: groupId
@@ -41,6 +67,7 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
       console.log(error);
     }
    };
+
 
   return (
     <div>

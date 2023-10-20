@@ -30,7 +30,7 @@ app.get('/',(req,res)=>{
 
 app.use( userRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/sendMessage', messageRouter);
+app.use('/msg', messageRouter);
 
 app.get('/api/chat/:id',(req,res)=>{
     console.log(req.params.id);

@@ -7,7 +7,8 @@ import { ChatBox, MyChat, SideDrawer } from '../component';
 
 const ChatPage = () => {
    const  user  = ChatState();
-  console.log(user);
+  
+  const [fetchAgain, setFetchAgain] = useState(false);
 
   return (
     <div style={{width:"100%",background:"linear-gradient(to bottom, black, #300000)"}}>
@@ -22,8 +23,10 @@ const ChatPage = () => {
        padding:'10px'}}
    >
     
-    {user && <MyChat />}
-    {user && <ChatBox />} 
+    {user && 
+    <MyChat fetchAgain={fetchAgain}  />}
+    {user && 
+    <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}  />} 
     
    </Box>
     </div>

@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom'
 
 const HomePage = () => {
   const history = useHistory();
-  
+
   useEffect(()=>{ 
     const user = JSON.parse(localStorage.getItem("userInfo"));
 
@@ -16,10 +16,12 @@ const HomePage = () => {
   },[history]);
 
   return (
-    <div style={{overflow:'hidden'}}>
-      <div style={{overflow:'hidden'}}>
+    <div>
+      <Box 
+      
+      >
      <ThreeDHands />
-     </div>
+     </Box>
      <Container maxW='md'  >
       <Box style={{position:'absolute', top:'20%', right:'10%', color:"white"}}>
         <img style={{marginLeft:'2rem',height:'40%', width:'60%', borderRadius:'50%'}} alt='logo'
