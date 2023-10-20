@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
-
+const sequelize = require("../config/database");
+const { DataTypes } = require("sequelize");
+const User = require("./userModel");
+const Chat = require("./chatModel");
+/*
 const messageModel = mongoose.Schema({
     sender:{type:mongoose.Schema.Types.ObjectId, ref:"User"},
     content:{type:String, trim:true},
@@ -14,5 +18,29 @@ const messageModel = mongoose.Schema({
 )
 
 const Message = mongoose.model("Message", messageModel);
+*/
+
+
+const Message = sequelize.define('message',{
+    id:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        autoIncrement:true,
+        primaryKey:true
+    },
+    name:{
+        type:DataTypes.STRING,
+    },
+    message:{
+        type:DataTypes.STRING,
+    },
+    groupId:{
+        type:DataTypes.STRING,
+        allowNull:false,
+    }
+});
+
+
+
 
 module.exports = Message;

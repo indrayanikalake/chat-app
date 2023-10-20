@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { Box } from '@chakra-ui/layout';
-import { useToast, Button } from '@chakra-ui/react';
+import { useToast, Button, Stack, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import { ChatState } from '../../context/ChatProvider';
 import { AddIcon } from '@chakra-ui/icons';
-import {ChatLoading} from './ChatLoading';
+
 import { getSender } from '../config/ChatLogics';
+import ChatLoading from './ChatLoading';
+import GroupChatModal from './GroupChatModal';
 
-const MyChat = () => {
+const MyChat = ({fetchAgain}) => {
   const [loggedUser, setLoggedUser] = useState();
-   const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
-
+   const {  selectedChat, setSelectedChat, chats, setChats, group } = ChatState();
+  
+ let user = localStorage.getItem('userInfo');
+ user=JSON.parse(user);
    const toast = useToast();
+   
+   
 
    const fetchChats = async () =>{
+    console.log(user.token);
     try{
 
       const config = {
@@ -22,9 +29,10 @@ const MyChat = () => {
         },
       }
 
-      const {data} = axios.get('/api/chat',config);
-      console.log(data);
-      setChats(data);
+      const {data} =await axios.get('/api/chat',config);
+      console.log(data.data);
+    
+      setChats(data.data);
     }catch(error){
       toast({
           title: 'Error occured',
@@ -37,10 +45,22 @@ const MyChat = () => {
     }
    }
 
+ 
+    useEffect(()=>{
+    fetchChats();
+   },[]);
+
+     useEffect(()=>{
+     fetchChats()
+   },[group])
+  
+
    useEffect(()=>{
        setLoggedUser(JSON.parse(localStorage.getItem('userInfo')));
        fetchChats();
-   },[]);
+   },[fetchAgain]);
+
+   console.log(group);
 
   return (
     <Box
@@ -51,6 +71,8 @@ const MyChat = () => {
     bg='linear-gradient(to right, black, #300000)'
     w={{base: "100%",md:'31%'}}
     borderRadius='lg'
+    
+  
    >
    <Box
    pb={3}
@@ -63,6 +85,7 @@ const MyChat = () => {
    alignItems='center'
    >
   My Chats
+  <GroupChatModal>
   <Button
   d='flex'
 
@@ -71,42 +94,28 @@ const MyChat = () => {
   >
    New Group Chat
   </Button>
+  </GroupChatModal>
    </Box>
    <Box
    d='flex'
    flexDir='column'
-   p={3}
-
+   p={5}
+   marginBottom={5}
    w='100%'
    h='100%'
    borderRadius='lg'
    overflowY='hidden'
-
+   
    >
-  {chats?(
-    <Stack
-    overflowY='scroll'
-    >
-    {chats.map(chat=>(
-      <Box
-      onClick={()=>setSelectedChat(chat)}
-      cursor='pointer'
-      bg={selectedChat === chat? "#38B2AC" : "E8E8E8" }
-      color={selectedChat === chat? "white" : "blue.900"}
-      px={3}
-      py={2}
-      borderRadius='lg'
-      key={chat._id}
-      >
-      <Text>
-        {!chat.isGroupChat?getSender(loggedUser, chat.users):chat.chatName}
-      </Text>
-      </Box>
-    ))}
-    </Stack>
-  ):(
-    <ChatLoading />
-  )}
+ 
+   
+  {chats?.map(chat=>(
+    <Text bg='#000000' borderRadius='lg' borderBottomWidth='1px' p={3} marginBottom={3} onClick={()=>setSelectedChat(chat)}>
+      {chat.groupName}
+    </Text>
+  )
+  )
+  }
    </Box>
     </Box>
   )

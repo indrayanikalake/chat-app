@@ -15,7 +15,17 @@ const protect = asyncHandler(async (req,res,next)=>{
 
             //decode token id
             let decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = await User.findById(decoded.id).select("-password");
+            console.log(decoded);
+            console.log(decoded.id);
+            const user = await User.findByPk(decoded.id,{
+              attributes:{ exclude : ['password']},
+            });
+            console.log(user);
+             if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+            }
+
+            req.user = user;
             next();
 
         }catch(error){

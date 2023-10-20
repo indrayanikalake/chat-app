@@ -2,6 +2,7 @@ import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, V
 import React, { useState } from 'react'
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { ChatState } from '../../context/ChatProvider';
 
 const LogIn = () => {
      const [show,setShow] = useState(false);
@@ -12,6 +13,7 @@ const LogIn = () => {
     const [ loading, setLoading ] = useState(false);
     const toast = useToast();
     const history = useHistory();
+    const {auth, setAuth} = ChatState();
 
     const handleClick = () =>{
         setShow(!show);
@@ -50,6 +52,7 @@ const LogIn = () => {
         })
         localStorage.setItem("userInfo", JSON.stringify(data));
         setLoading(false);
+        setAuth(!auth);
         history.push('/chats')
         }catch(error){
 

@@ -2,6 +2,7 @@ import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, V
 import axios from 'axios';
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom';
+import { ChatState } from '../../context/ChatProvider';
 
 const SignUp = () => {
     const [show,setShow] = useState(false);
@@ -13,6 +14,7 @@ const SignUp = () => {
     const [ loading, setLoading ] = useState(false);
       const toast = useToast();
       const history= useHistory();
+      const {auth, setAuth} = ChatState();
 
     const handleClick = () =>{
         setShow(!show);
@@ -99,6 +101,7 @@ const SignUp = () => {
         })
         localStorage.setItem("userInfo", JSON.stringify(data));
         setLoading(false);
+        setAuth(!auth);
         history.push('/chats')
         }catch(error){
 
@@ -114,7 +117,9 @@ const SignUp = () => {
     }
   return (
     <div>
-    <VStack spacing='5px' color='white'>
+    <VStack 
+   
+    spacing='5px' color='white'>
      <FormControl id='first-name' isRequired>
         <FormLabel>Name</FormLabel>
             <Input

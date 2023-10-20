@@ -1,6 +1,6 @@
 import { Box, Drawer, Button, Tooltip, Text, Menu, MenuButton, Avatar, MenuItem, MenuList, MenuDivider, DrawerContent, DrawerHeader, DrawerBody, Input, useToast, Spinner } from '@chakra-ui/react';
 import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { ChatState } from '../../context/ChatProvider';
 import ProfileModel from './ProfileModel';
 import { useHistory } from 'react-router-dom';
@@ -13,14 +13,19 @@ import UserListItem from '../User Avatar/UserListItem';
 const SideDrawer = () => {
   const [search, setSearch ] = useState();
   const [searchResult, setSearchResult ] = useState();
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
    const { isOpen, onOpen, onClose } = useDisclosure()
    const toast = useToast();
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+   
+  const { user, setSelectedChat, chats, setChats, setUser } = ChatState();
+
   
   const history = useHistory();
- console.log(user.name);
+
+console.log(user);
+
+ console.log(user?.name);
   const logoutHandler = () =>{
     localStorage.removeItem("userInfo");
     history.push('/') 
@@ -155,16 +160,15 @@ const SideDrawer = () => {
         <Button onClick={handleSearch}
         >Go</Button>
       </Box>
-      {loading?<ChatLoading />:(
+     
+      {loading ? (<ChatLoading />):(
         searchResult?.map(user=>(
-          <UserListItem 
-          key={user._id}
+          <UserListItem
+          key={user.id}
           user={user}
-          handleFunction={()=>accessChat(user._id)}
-          />
+          handleFunction={()=>accessChat(user.id)}/>
         ))
       )}
-      {loadingChat && <Spinner ml='auto' d='flex' />}
      </DrawerBody>
      </DrawerContent>
      

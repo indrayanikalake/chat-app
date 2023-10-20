@@ -1,6 +1,10 @@
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
+const {DataTypes, Sequelize} = require('sequelize');
+const User = require('./userModel');
+const sequelize = require('../config/database');
+const Message = require('./messageModel');
 
-
+/*
 const chatModel = mongoose.Schema({
     chatName:{
         type:String,
@@ -31,5 +35,21 @@ const chatModel = mongoose.Schema({
 })
 
 const Chat = mongoose.model("chat", chatModel );
+*/
+
+
+const Chat = sequelize.define('chat',{
+     chatName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    isGroupChat: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    groupAdminId: {
+      type: DataTypes.BIGINT,
+    },
+})
 
 module.exports = Chat;
