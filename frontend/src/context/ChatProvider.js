@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 const { createContext, useContext, useState, useEffect } = require("react");
@@ -12,7 +13,8 @@ const ChatProvider = ({children}) =>{
     const [selectedChat, setSelectedChat] = useState();
     const [chats, setChats] = useState([]);
     const [group, setGroup] =useState(false);
-    const [auth, setAuth] = useState(false)
+    const [auth, setAuth] = useState(false);
+    const [groupMembers, setGroupMembers] =useState();
    
 
     useEffect(()=>{
@@ -23,12 +25,15 @@ const ChatProvider = ({children}) =>{
         if(!userInfo){
             history?.push('/')
         }
+  
     },[auth]);
 
    
 
+   
+
    return (
-    <ChatContext.Provider value={{auth, setAuth, group, setGroup, user,setUser,selectedChat, setSelectedChat,chats,setChats,
+    <ChatContext.Provider value={{groupMembers, setGroupMembers,auth, setAuth, group, setGroup, user,setUser,selectedChat, setSelectedChat,chats,setChats,
     }}>
         {children}
     </ChatContext.Provider>

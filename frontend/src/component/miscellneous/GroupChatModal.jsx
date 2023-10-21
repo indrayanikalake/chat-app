@@ -18,8 +18,9 @@ const GroupChatModal = ({children}) => {
           const [loading, setLoading] = useState(false);
          const toast = useToast();     
 
-         const {user,chats,setChats, setGroup,group} = ChatState();
-        console.log(searchResult);
+         const {user,chats,setChats, setGroup,group,selectedChat} = ChatState();
+      
+         console.log(selectedChat);
          const handleSearch = async (query) =>{
           setSearch(query);
           if(!query){
@@ -76,6 +77,13 @@ const GroupChatModal = ({children}) => {
                 name:groupChatName,
                 
             },config);
+
+           await Promise.all(searchResult?.map(async (s) => {
+           const groupId = selectedChat.id;
+           const userId = s.id;
+           await axios.post('/api/chat/groupadd', { userId: userId, groupId: groupId }, config);
+           }));
+
             setGroup(!group);
             onClose();
                toast({
@@ -154,7 +162,7 @@ const GroupChatModal = ({children}) => {
           {/* render search users*/}
           {loading?<Spinner /> :(
             <div>
-              {  searchResult?.slice(0,4).map(user=>(<UserListItem key={user._id} user={user} 
+              {  searchResult?.slice(0,4).map(user=>(<UserListItem key={user.id} user={user} 
                 handleFunction={()=>handleGroup(user)}
                 />))}
             </div>

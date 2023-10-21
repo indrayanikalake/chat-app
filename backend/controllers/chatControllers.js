@@ -3,6 +3,7 @@ const Chat = require('../models/chatModel');
 const User = require('../models/userModel');
 const { v4: uuidv4 } = require("uuid");
 const GroupUserInfo = require('../models/groupUserInfo');
+const Group = require('../models/groupModel');
 
 
 const accessChat = asyncHandler( async (req, res)=>{
@@ -168,49 +169,88 @@ const createGroupChat = asyncHandler( async (req,res)=>{
 
 const renameGroup = asyncHandler( async (req,res)=>{
    const { chatId, chatName } = req.body;
+   try{
+  
+    const groupInfo = await GroupUserInfo.findOne({
+      where:{
+        groupId:chatId,
+        userId:req.user.id
+      }
+    })
 
-   const updatedChat = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-        chatName,
-    },
-    {
-         new:true,
+    console.log(groupInfo);
+
+    if(groupInfo.isAdmin === true){
+    const group = await Group.findByPk(chatId);
+
+    if(!group)throw new Error('group not found');
+
+    group.groupName = chatName;
+    await group.save();
+
+     res.status(200).json(group);
+    }else{
+      throw new Error("Only Admin can change the group name")
     }
-   )
-   .populate("users","-password")
-   .populate("groupAdmin","-password");
-
-   if(!updatedChat){
+   }catch(error){
     res.status(400);
-    throw new Error("chat not found");
+    throw new Error(error);
    }
-   else{
-    res.json(updatedChat);
-   }
+   
 })
 
 const addToGroup = asyncHandler( async (req,res)=>{
-   const {chatId, userId} = req.body;
+   const userId = Number(req.body.userId);
+   const groupId = req.body.groupId;
 
-   const added = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-        $push: {users: userId}
-    },
-    {
-        new:true
-    }).populate("users","-password")
-    .populate("goupAdmin","-password");
+   try{
+    const user = await User.findByPk(userId);
 
-    if(!added){
-        res.status(400);
-        throw new Error("Chat not found");
+    if(!user) throw new Error('user not found')
+
+    const group = await Group.findByPk(groupId);
+    if(!group)throw new Error('group not found');
+
+    const groupInfo = await GroupUserInfo.findOne({
+      where:{
+        userId:req.user.id,
+        groupId:groupId
+      }
+    });
+
+    if(groupInfo.isAdmin ===true){
+
+    await user.addGroup(group);
+
+
+    res.status(200).json("User added successfully");
     }else{
-        res.json(added);
-    }
+      console.log('only admin can add users');
+      res.status(400).send('only anly admin can add user')}
+   }catch(error){
+    console.log(error);
+      res
+        .status(500)
+        .json({ message: "sorry user cannot be added in this group" });
+   }
 })
 
+const getAllUsers = asyncHandler( async (req,res)=>{
+  const groupId = req.query.groupId;
+  console.log(req.query);
+      try{
+          const group = await Group.findByPk(groupId);
+    if(!group)throw new Error('group not found');
+
+
+    const groupMembers = await group.getUsers();
+    console.log(groupMembers);
+    res.status(200).json(groupMembers);
+      }catch(error){
+         res.status(400);
+         throw new Error(error);
+      }
+})
 
 
 const removeFromGroup = asyncHandler( async (req,res)=>{
@@ -237,4 +277,37 @@ const removeFromGroup = asyncHandler( async (req,res)=>{
 
 })
 
-module.exports = {accessChat, fetchGroup, createGroupChat, renameGroup, addToGroup, removeFromGroup};
+const deleteUser = asyncHandler(async (req, res)=>{
+  const {groupId, userId} = req.params;
+  console.log(req.params);
+  try{
+    const group = await Group.findByPk(groupId);
+    const user = await User.findByPk(userId);
+
+    if(!group || !user) throw new Error('Group or User does not exist');
+    console.log(req.user.id);
+    const groupInfo = await GroupUserInfo.findOne({
+      where:{
+       userId:req.user.id,
+        groupId:groupId
+      }
+    })
+    console.log(groupInfo);
+
+    if(groupInfo.isAdmin === true){
+         await group.removeUser(user);
+         res.status(200).send('removed successfully');
+      }else{
+        res.status(400);
+        throw new Error('only admin can remove user');
+      }
+      
+
+  }catch(error){
+    res.status(400);
+    throw new Error(error);
+  }
+
+})
+
+module.exports = {accessChat, fetchGroup, createGroupChat, renameGroup, addToGroup, removeFromGroup, getAllUsers, deleteUser};

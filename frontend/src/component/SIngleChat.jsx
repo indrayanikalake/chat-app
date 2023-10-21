@@ -30,7 +30,7 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
     }
     try{
       const response = await axios.get('/msg/receivemsg', config);
-      console.log(response);
+      console.log(response.data);
 
     }catch(error){
       console.log(error);
@@ -55,6 +55,7 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
       }
     }
     setLoading(true);
+    
     try{
       await axios.post('/msg/sendMessage',{
       
@@ -62,6 +63,8 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
         groupId: groupId
       },config);
   setLoading(false);
+  setMessage();
+
     }catch(error){
       setLoading(false);
       console.log(error);
