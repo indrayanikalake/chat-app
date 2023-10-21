@@ -102,7 +102,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
         }catch(error){
             toast({
           title: 'Error fetching the data',
-          description:error.message,
+          description:'Only Admin can update the group name',
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -219,6 +219,13 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
           fetchGroupMembers();
           
         }catch(error){
+          toast({
+          title: 'Only admin can delete User',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: "bottom"
+        });
           console.log(error);
         }
       };
