@@ -6,16 +6,25 @@ import { getSender, getSenderFull } from './config/ChatLogics';
 import ProfileModel from './miscellneous/ProfileModel';
 import UpdateGroupChatModal from './miscellneous/UpdateGroupChatModal';
 import axios from 'axios';
+import io from 'socket.io-client';
+const ENDPOINT = 'http://localhost:5000';
+var  socket = io(ENDPOINT);
 
+var  selectedChatCompare;
 
 const SIngleChat = ({fetchAgain, setFetchAgain}) => {
    const {user,selectedChat, setSelectedChat  } = ChatState();
-   const [message, setMessage] = useState();
+   const [message, setMessage] = useState([]);
    const [loading, setLoading ] = useState(false);
-    
+   const [socketConnected, setSocketConnected] = useState(false);
+   const [messages, setMessages] = useState([]);
+   const [lastMessageId, setLastMessageId] = useState(0);
+
    console.log(selectedChat);
    console.log(user);
    const groupIdentity = selectedChat?.id;
+   const userId = JSON.parse(localStorage.getItem('userInfo'));
+
 
    const fetchMessage =async () =>{
     const groupId = selectedChat?.id;
@@ -29,10 +38,19 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
       }
     }
     try{
-      const response = await axios.get('/msg/receivemsg', config);
-      console.log(response.data.map(user=>user.message));
-      setMessage(response.data.map(user=>user.message))
-      localStorage.setItem('message',message);
+      const response = await axios.get(`/msg/receivemsg/${lastMessageId}`, config);
+      const msgs = response.data.map(user=>user)
+      console.log(msgs);
+      setMessages(msgs);
+      console.log(response.data);
+     if(response.data.length>5){ 
+      setLastMessageId(response.data[response.data.length-1].id)
+    }
+      localStorage.setItem('message',msgs);
+      const messages = localStorage.getItem('message');
+      console.log( messages.split(','));
+
+      socket.emit('join chat', selectedChat.id)
 
     }catch(error){
       console.log(error);
@@ -42,7 +60,24 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
 
    useEffect(()=>{
     fetchMessage();
-   },[groupIdentity])
+
+    selectedChatCompare =selectedChat;
+     // Set up the socket.io listener when the component mounts
+    socket.on('receive message', handleMessageReceived);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      socket.off('receive message', handleMessageReceived);
+    };
+   },[groupIdentity]);
+
+   const handleMessageReceived = (messageObj, receivedGroupId) =>{
+      console.log('Received a message: ', messageObj, receivedGroupId);
+    if(messageObj){
+      setMessages((prevMsg)=>[...prevMsg, messageObj]);
+    }
+
+   }
 
    const messageHandler = (e)=>{
     setMessage(e.target.value);
@@ -50,6 +85,7 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
 
    const sendMessage = async () =>{
     let groupId = selectedChat.id;
+    const userId = user.id;
     const config={
       headers:{
         Autherization: `Bearer ${user.token}`,
@@ -65,8 +101,9 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
         groupId: groupId
       },config);
   setLoading(false);
-  fetchMessage();
-  setMessage();
+ 
+  socket.emit('send message',{message, userId}, groupId); 
+ 
 
     }catch(error){
       setLoading(false);
@@ -74,7 +111,13 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
     }
    };
 
+ useEffect(()=>{
+  console.log(messages);
+ },[messages])
 
+   useEffect(()=>{
+  
+   },[])
   return (
     <div>
     {selectedChat?(
@@ -115,7 +158,36 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
           p="4"
           height="500px"
           overflowY="auto"
-        ></Box>
+           display="flex"
+          flexDirection="column"
+
+           sx={{
+    '&::-webkit-scrollbar': {
+      width: '8px', // Adjust the width as needed
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'black.200', // Adjust the color as needed
+      borderRadius: 'full',
+    },
+  }}
+           
+        >
+          {Array.isArray(messages)?(<>{messages?.map(m=>{
+            if(m.userId === userId.id){
+            return <Box bg='#E0E0E0' color='blackAlpha.500'  alignSelf="flex-start" w='10%'  borderWidth="1px"
+          borderColor="black"
+          borderRadius="md"
+            fontSize='22px'
+            >{m.message}</Box>
+          }else{
+            return <Box bg='#E0E0E0' color='blackAlpha.500'  alignSelf="flex-end" bg='green.100' w='10%'  borderWidth="1px"
+          borderColor="black"
+          borderRadius="md"
+            fontSize='22px'
+            >{m.message}</Box>
+          }
+          })}</>):(<></>) }
+        </Box>
               <FormControl 
              isRequired mt={3}
               style={{ display: 'flex', flexDirection: 'row' }}
@@ -172,4 +244,5 @@ const SIngleChat = ({fetchAgain, setFetchAgain}) => {
   )
 }
 
-export default SIngleChat
+export default SIngleChat;
+

@@ -5,7 +5,7 @@ const { sendMsg, receiveMsg } = require('../controllers/messageControlloer');
 const router = express.Router();
 
 router.route('/sendMessage').post(protect,sendMsg);
-router.route('/receivemsg').get(protect,receiveMsg)
+router.route('/receivemsg/:lastid').get(protect,receiveMsg)
 
 
 module.exports = router;

@@ -310,4 +310,31 @@ const deleteUser = asyncHandler(async (req, res)=>{
 
 })
 
-module.exports = {accessChat, fetchGroup, createGroupChat, renameGroup, addToGroup, removeFromGroup, getAllUsers, deleteUser};
+const makeUserAdmin = asyncHandler(async (req,res)=>{
+const {userId, groupId} =req.body;
+try{
+  const groupInfo1 = await GroupUserInfo.findOne({
+    where:{
+      userId : req.user.id,
+      groupId:groupId,
+    }
+  })
+  const groupInfo2 = await GroupUserInfo.findOne({
+    where:{
+      userId:userId,
+      groupId:groupId
+    }
+  })
+
+  if(groupInfo1.isAdmin === true){
+    groupInfo2.isAdmin = true;
+    groupInfo2.save();
+     res.status(200).json({isAdmin:groupInfo2.isAdmin});
+  }
+
+}catch(error){
+   res.status(500).json({ message: 'Error making user an admin.' });
+}
+})
+
+module.exports = {accessChat, makeUserAdmin, fetchGroup, createGroupChat, renameGroup, addToGroup, removeFromGroup, getAllUsers, deleteUser};

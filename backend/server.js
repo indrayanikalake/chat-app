@@ -12,6 +12,7 @@ const GroupUserInfo = require('./models/groupUserInfo');
 const Group = require('./models/groupModel');
 const Message = require('./models/messageModel');
 
+
 dotenv.config();
 //connectDb();
 
@@ -41,6 +42,11 @@ res.send(singleChat);
 
 })
 
+User.hasMany(Message);
+
+Message.belongsTo(User, { foreignKey: 'userId' });
+
+
 User.belongsToMany(Group, {
   through: GroupUserInfo, // Specify the custom join table
   foreignKey: 'userId', // Foreign key in the join table that links to User
@@ -51,18 +57,38 @@ Group.belongsToMany(User, {
   foreignKey: 'groupId', // Foreign key in the join table that links to Group
 });
 
-User.hasMany(Message);
+
 Group.hasMany(Message);
 
 Message.belongsTo(Group);
 
 const PORT = process.env.PORT || 5000;
 
+var appServer = app.listen(5000, console.log(`Server Started on Port ${PORT}`));
 
 sequelize.sync({force:false})
 .then(res=>
   {
-app.listen(5000, console.log(`Server Started on Port ${PORT}`));
+appServer
   })
   .catch(error=>console.log(error));
+
+  const io = require('socket.io')(appServer,{
+    pingTimeout:60000,
+    cors:{
+      origin:"http://localhost:3001",
+    }
+  });
+
+  io.on('connection',(socket)=>{
+     console.log('connected to socket.io');
+
+     socket.on('send message', (messageObj, groupId)=>{
+      socket.join(groupId);
+       io.to(groupId).emit('receive message', messageObj, groupId);
+   
+    })
+    })
+   
+  
 
