@@ -3,11 +3,13 @@ const Message = require('../models/messageModel');
 const { Op } = require("sequelize");
 
 const sendMsg = asyncHandler(async (req,res)=>{
-    const {message, groupId} = req.body;
+    const {pic, video, message, groupId} = req.body;
 try{
     await req.user.createMessage({
         name:req.user.name,
         message:message,
+        pic:pic,
+        video:video,
         groupId:groupId
     })
     res.status(200).json({message:"message sent successfully"})

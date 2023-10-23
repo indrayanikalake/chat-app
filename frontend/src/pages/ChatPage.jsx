@@ -21,6 +21,17 @@ const ChatPage = () => {
      width:'100%',
       height:'91.5vh',
        padding:'10px'}}
+       sx={{
+    '&::-webkit-scrollbar': {
+      width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'black.200',
+      borderRadius: 'full',
+    },
+   
+  }}
+  overflowY='hidden'
    >
     
     {user && 

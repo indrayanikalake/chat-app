@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const Chat = require('../models/chatModel');
+
 const User = require('../models/userModel');
 const { v4: uuidv4 } = require("uuid");
 const GroupUserInfo = require('../models/groupUserInfo');
@@ -253,7 +253,7 @@ const getAllUsers = asyncHandler( async (req,res)=>{
 })
 
 
-const removeFromGroup = asyncHandler( async (req,res)=>{
+/*const removeFromGroup = asyncHandler( async (req,res)=>{
    const {chatId, userId} = req.body;
 
    const removed = await Chat.findByIdAndUpdate(
@@ -275,7 +275,7 @@ const removeFromGroup = asyncHandler( async (req,res)=>{
     
   
 
-})
+})*/
 
 const deleteUser = asyncHandler(async (req, res)=>{
   const {groupId, userId} = req.params;
@@ -329,7 +329,9 @@ try{
   if(groupInfo1.isAdmin === true){
     groupInfo2.isAdmin = true;
     groupInfo2.save();
-     res.status(200).json({isAdmin:groupInfo2.isAdmin});
+     res.status(200).json('successful');
+  }else{
+     res.status(400).json({ message: 'Error making user an admin.' });
   }
 
 }catch(error){
@@ -337,4 +339,4 @@ try{
 }
 })
 
-module.exports = {accessChat, makeUserAdmin, fetchGroup, createGroupChat, renameGroup, addToGroup, removeFromGroup, getAllUsers, deleteUser};
+module.exports = {accessChat, makeUserAdmin, fetchGroup, createGroupChat, renameGroup, addToGroup,  getAllUsers, deleteUser};

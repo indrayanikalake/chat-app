@@ -1,7 +1,7 @@
 const express = require('express');
 const { chats } = require("./data/data");
 const dotenv = require('dotenv');
-const connectDb = require('./config/db');
+//const connectDb = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const messageRouter = require('./routes/messageRouter');
@@ -66,7 +66,7 @@ const PORT = process.env.PORT || 5000;
 
 var appServer = app.listen(5000, console.log(`Server Started on Port ${PORT}`));
 
-sequelize.sync({force:false})
+sequelize.sync({force:true})
 .then(res=>
   {
 appServer

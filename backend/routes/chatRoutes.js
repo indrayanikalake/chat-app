@@ -9,7 +9,7 @@ router.route('/').get(protect,fetchGroup);
 router.route('/group').post(protect,createGroupChat);
 router.route('/rename').patch(protect,renameGroup);
 router.route('/groupadd').post(protect,addToGroup);
-router.route('/groupremove').put(protect,removeFromGroup);
+//router.route('/groupremove').put(protect,removeFromGroup);
 router.route('/allUsers').get(getAllUsers);
 router.route('/deleteUser/:groupId/:userId').delete(protect,deleteUser);
 router.route('/makeAdmin').post(protect, makeUserAdmin);

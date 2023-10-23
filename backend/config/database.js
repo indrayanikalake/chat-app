@@ -1,4 +1,4 @@
-const { model } = require('mongoose');
+//const { model } = require('mongoose');
 const Sequelize = require('sequelize');
 
 

@@ -57,6 +57,7 @@ const SignUp = () => {
         })
          }
     }
+    
     const submitHandler = async () =>{
         setLoading(true);
         if(!name || !email || !password || !cnfmPassword){

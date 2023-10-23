@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+//const mongoose = require("mongoose");
 const sequelize = require("../config/database");
 const { DataTypes } = require("sequelize");
 const User = require("./userModel");
-const Chat = require("./chatModel");
+//onst Chat = require("./chatModel");
 /*
 const messageModel = mongoose.Schema({
     sender:{type:mongoose.Schema.Types.ObjectId, ref:"User"},
@@ -33,6 +33,12 @@ const Message = sequelize.define('message',{
     },
     message:{
         type:DataTypes.STRING,
+    },
+    pic:{
+         type:DataTypes.STRING,
+    },
+    video:{
+          type:DataTypes.STRING,
     },
     groupId:{
         type:DataTypes.STRING,

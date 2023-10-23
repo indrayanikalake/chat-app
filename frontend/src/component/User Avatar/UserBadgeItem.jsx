@@ -1,16 +1,21 @@
 import { CloseIcon, StarIcon } from '@chakra-ui/icons'
-import { Box, IconButton, useToast } from '@chakra-ui/react'
+import { Avatar, Box, IconButton, useToast } from '@chakra-ui/react'
 import axios from 'axios'
 import React, { useState } from 'react'
 import { ChatState } from '../../context/ChatProvider'
 
 
 const UserBadgeItem = ({user, handleFunction}) => {
-  const {selectedChat} = ChatState();
-  const [isAdmin, setIsAdmin] = useState(false)
+  const {selectedChat, chats} = ChatState();
+  const [isAdmin, setIsAdmin] = useState(false);
   
+ const toast = useToast();
 
   console.log(selectedChat);
+  console.log(chats);
+
+  const groupUserInformation = selectedChat['group-user-info'];
+    console.log(groupUserInformation);
   
 
   const makeAdmin = async () =>{
@@ -18,6 +23,8 @@ const UserBadgeItem = ({user, handleFunction}) => {
     const userId= user.id;
     const groupId = selectedChat.id;
     console.log(userId);
+    
+    
 
    const config = {
     headers:{
@@ -26,11 +33,18 @@ const UserBadgeItem = ({user, handleFunction}) => {
    }
 
    try{
-   const user =  await axios.post('/api/chat/makeAdmin',{userId,groupId},config);
-   console.log(user.data);
-    setIsAdmin(user.data.isAdmin);
+   const response =  await axios.post('/api/chat/makeAdmin',{userId,groupId},config);
+   console.log(response.data);
+  
 
    }catch(error){
+      toast({
+          title: 'Only admin can make User Admin',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: "bottom"
+        });
     console.log(error);
    }
   }
@@ -46,12 +60,19 @@ const UserBadgeItem = ({user, handleFunction}) => {
     mb={2}
     variant='solid'
     fontSize={12}
-    backgroundColor='purple'
-    color='white'
+    backgroundColor='#D8BFD8'
+    color='black'
     cursor='pointer'
    
     >
-        {user.name}
+        <Avatar 
+      mr={2}
+      size="sm"
+      cursor="pointer"
+      name={user.name}
+      src={user.pic}
+      />
+        <b>{user.name}</b>
         <CloseIcon
          
         pl={1} onClick={handleFunction} />
@@ -60,7 +81,7 @@ const UserBadgeItem = ({user, handleFunction}) => {
         <StarIcon
          position="absolute"
          right="8"
-        color={isAdmin? 'goldenrod' : 'gray.100'}  onClick={makeAdmin}/>
+        color={groupUserInformation.isAdmin? 'goldenrod' : 'gray.100'}  onClick={makeAdmin}/>
         
       
     </Box>

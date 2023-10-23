@@ -19,6 +19,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       const { selectedChat ,setSelectedChat, user, groupMembers, setGroupMembers } = ChatState();
 
       console.log(selectedChat);
+      console.log(groupMembers);
       let userInfo = JSON.parse(localStorage.getItem('userInfo'));
       console.log(userInfo.token);
 
@@ -279,12 +280,16 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
                 key={user.id}
                 user={user}
                 handleFunction={()=>handleAddUser(user)}
+
                 />
               ))
               )}
               {Array.isArray(groupMembers) && groupMembers.length > 0 ? (
-               groupMembers.map((member) => (
-             <UserBadgeItem key={member.id} user={member} handleFunction={() => deleteUser(member)} />
+               groupMembers.map((user) => (
+             <UserBadgeItem
+              key={user.id} user={user}
+             
+              handleFunction={() => deleteUser(user)} />
               ))
               ) : (
                     <p>No group members available.</p>
